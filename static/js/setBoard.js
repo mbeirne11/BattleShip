@@ -4,12 +4,18 @@ window.onload = function() {
 //Create an empty board
 let board = []
 function setBoard() {
-    
     setCPU()
     totalShipsPlaced = 0
     totalHits = 0
+    totalFires = 0
     let scoreBoard = document.getElementById('scoreBoard')
     scoreBoard.innerHTML=''
+    let acc = document.getElementById('accuracy')
+    acc.innerHTML=''
+    let tiles = document.getElementsByClassName(`shipTile info`)
+    for(let t of tiles){
+        t.classList.remove('fireHit')
+    }
     for(let name of ['battleship','aircraft','destroyer','submarine','small']){
         d3.select(`.${name}`).attr("style", "visibility:visible")
     }
