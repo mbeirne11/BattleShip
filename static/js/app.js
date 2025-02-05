@@ -1,3 +1,35 @@
+let ships = {
+    'battleship':{
+        'isPlaced':false,
+        'health':[0,0,0,0],
+        'isReady':false,
+        'isSunk':false
+    },
+    'aircraft':{
+        'isPlaced':false,
+        'health':[0,0,0,0,0],
+        'isReady':false,
+        'isSunk':false
+    },
+    'submarine':{
+        'isPlaced':false,
+        'health':[0,0,0],
+        'isReady':false,
+        'isSunk':false
+    },
+    'destroyer':{
+        'isPlaced':false,
+        'health':[0,0,0],
+        'isReady':false,
+        'isSunk':false
+    },
+    'small':{
+        'isPlaced':false,
+        'health':[0,0],
+        'isReady':false,
+        'isSunk':false
+    }
+}
 function placeCPU(size){
     let r = Math.floor(Math.random()*2)
     let x = 0
@@ -50,11 +82,12 @@ function setCPU(){
         }
     }
     console.log('setCPU')
-    let cpuShips = [2,3,3,4,5]
+    let cpuShips = [5,4,3,3,2]
     for(let size of cpuShips){
         placeCPU(size)
     }    
 }
+let totalFires = 0;
 let totalHits;
 function checkForWinner(){
     totalHits = 0
@@ -79,9 +112,14 @@ function showWinner(turn){
     let scoreBoard = document.getElementById('scoreBoard')
     scoreBoard.innerHTML = turn + ' Wins!'
     d3.select("#playAgain").attr("style", "visibility:visible")
+    totalHits=17
 }
 let isTurn = true
 function CPUfire(){
+    isTurn = false
+    if(totalHits>16){
+        return
+    }
     let cpuMoveOptions = []
     let x = Math.floor(Math.random() * 9)
     let y = Math.floor(Math.random() * 9)
@@ -113,14 +151,17 @@ function CPUfire(){
     }
     if(!!t.classList.contains('ship')){
         t.classList.add('fireHit')
+        displayHitInfo(t.classList[2],t.classList[3])
         checkForWinner()
     }else{
         t.classList.add('fireMiss')
     }
-    
-    isTurn = true
 }
-
+function displayHitInfo(ship,space){
+    // ships[ship]['health'][space] = 1
+    let tiles = document.getElementsByClassName(`shipTile info ${ship}`)
+    tiles[space].classList.add('fireHit')
+}
 function unselectAll(){
     let shipTiles = document.getElementsByClassName('shipTile')
     for (let index = 0; index < shipTiles.length; index++) {
@@ -159,18 +200,20 @@ function selectShip(ship){
 function hoverShip(tile){
     unhoverShip()
     if(shipSize>0){
-        if(isRotated == false){
+        if(!isRotated){
             if(10-(parseInt(tile.id[0]))<shipSize){
                 return
             }
             for(let i = 0; i<shipSize;i++){
                 coor = `${parseInt(tile.id[0])+i}, ${tile.id[tile.id.length-1]}`
-                if(document.getElementById(coor).classList.contains('ship')){
+                if(document.getElementById(coor).classList.length>1){
                     return
                 }
             }
             for (let index = 0; index < shipSize; index++) {
-                document.getElementById(`${parseInt(tile.id[0])+index}, ${tile.id[tile.id.length-1]}`).classList.add('shipHover')
+                let t = document.getElementById(`${parseInt(tile.id[0])+index}, ${tile.id[tile.id.length-1]}`)
+                t.classList.add('shipHover')
+                // t.classList.add(shipName)
             }
             tile.addEventListener('click', placeShip)
         }
@@ -180,12 +223,14 @@ function hoverShip(tile){
             }
             for(let i = 0; i<shipSize;i++){
                 coor = `${tile.id[0]}, ${parseInt(tile.id[tile.id.length-1])+i}`
-                if(document.getElementById(coor).classList.contains('ship')){
+                if(document.getElementById(coor).classList.length>1){
                     return
                 }
             }
             for (let index = 0; index < shipSize; index++) {
-                document.getElementById(`${tile.id[0]}, ${parseInt(tile.id[tile.id.length-1])+index}`).classList.add('shipHover')
+                let t = document.getElementById(`${tile.id[0]}, ${parseInt(tile.id[tile.id.length-1])+index}`)
+                t.classList.add('shipHover')
+                // t.classList.add(shipName)
             }
             tile.addEventListener('click', placeShip)
         }
@@ -198,6 +243,7 @@ function unhoverShip(){
     for (let index = 0; index < tiles.length; index++) {
         const element = tiles[index];
         element.classList.remove('shipHover')
+        // element.classList.remove(shipName)
         element.removeEventListener('click',placeShip)
     }
 }
@@ -206,17 +252,23 @@ function rotateShips(){
 }
 totalShipsPlaced = 0
 function placeShip(tile){
-    if(isRotated == false){    
+    if(!isRotated){    
         for (let index = 0; index < shipSize; index++) {
             let t = document.getElementById(`${parseInt(tile.target.id[0])+index}, ${tile.target.id[tile.target.id.length-1]}`)
             t.classList.add('ship')
+            t.classList.add(`${shipName}Tile`)
+            t.classList.add(index)
             t.classList.remove('shipHover')
             board[parseInt(tile.target.id[0])+index][parseInt(tile.target.id[tile.target.id.length-1])] = shipSize
         }
     }else
         {for (let index = 0; index < shipSize; index++) {
-                document.getElementById(`${tile.target.id[0]}, ${parseInt(tile.target.id[tile.target.id.length-1])+index}`).classList.add('ship')
-                board[parseInt(tile.target.id[0])][parseInt(tile.target.id[tile.target.id.length-1])+index] = shipSize
+            let t = document.getElementById(`${tile.target.id[0]}, ${parseInt(tile.target.id[tile.target.id.length-1])+index}`)
+            t.classList.add('ship')
+            t.classList.add(`${shipName}Tile`)
+            t.classList.add(index)
+            t.classList.remove('shipHover')
+            board[parseInt(tile.target.id[0])][parseInt(tile.target.id[tile.target.id.length-1])+index] = shipSize
         }
     }
     d3.select(`.${shipName}`).attr("style", "visibility:hidden")
@@ -245,6 +297,7 @@ function unHighlightMove(tile){
     document.getElementById(tile.id).classList.remove('fireHover')
 }
 function fire(tile){
+    isTurn=true
     if(totalShipsPlaced<5){
         return
     }
@@ -256,12 +309,21 @@ function fire(tile){
     }
     row = tile.id.replace('screen ', '')[0]
     col = tile.id.replace('screen ', '')[3]
+    totalFires+=1
     if(screen[row][col]!=0){
         document.getElementById(tile.id).classList.add('fireHit')
         checkForWinner()
     }else{
         document.getElementById(tile.id).classList.add('fireMiss')
     }
-    isTurn=false
+    let d = document.getElementsByClassName('display')
+    let hits = 0
+    for(let tile of d){
+        if(!!tile.classList.contains('fireHit')){
+            hits+=1
+        }
+    }
+    let scoreBoard = document.getElementById('accuracy')
+    scoreBoard.innerHTML = `Accuracy: ${(parseInt((totalHits/totalFires)*100))}%`
     CPUfire()
 }
