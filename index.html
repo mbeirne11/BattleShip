@@ -20,7 +20,7 @@
             <div class="box" id="howTo">
                 How To:
                 <div class="how">
-                    Select a ship bellow then place it on the board. You can rotate a ship by pressing the rotate button before placing it.
+                    Select a ship below then place it on the board. You can rotate a ship by pressing the rotate button before placing it.
                 </div>
                 <div class="how">
                     Once all five ships are placed you may begin. 
@@ -34,9 +34,9 @@
             </div>
             <div class="box" id="stats">
                 Stats
-                <!-- <div>
-                    Accuracy:
-                </div> -->
+                <div id="accuracy">
+                    
+                </div>
                 <div id="scoreBoard">
 
                 </div>
@@ -45,48 +45,47 @@
                 </button>
             </div>
             <div class="box" id="sea">
-                ships
                 <div class="shipsContainer" >
                     <div class="battleship">
                         <h3>BattleShip</h3>
                         <div class="shipInfo battleship" onclick="selectShip(this)">
-                            <div class="shipTile"></div>
-                            <div class="shipTile"></div>
-                            <div class="shipTile"></div>
-                            <div class="shipTile"></div>
+                            <div class="shipTile battleshipTile"></div>
+                            <div class="shipTile battleshipTile"></div>
+                            <div class="shipTile battleshipTile"></div>
+                            <div class="shipTile battleshipTile"></div>
                         </div>
                     </div>
                     <div class="aircraft">
                         <h3>Aircraft Carrier</h3>
                         <div class="shipInfo aircraft" onclick="selectShip(this)">
-                            <div class="shipTile"></div>
-                            <div class="shipTile"></div>
-                            <div class="shipTile"></div>
-                            <div class="shipTile"></div>
-                            <div class="shipTile"></div>
+                            <div class="shipTile aircraftTile"></div>
+                            <div class="shipTile aircraftTile"></div>
+                            <div class="shipTile aircraftTile"></div>
+                            <div class="shipTile aircraftTile"></div>
+                            <div class="shipTile aircraftTile"></div>
                         </div>
                     </div>
                     <div class="submarine">
                         <h3>Submarine</h3>
                         <div class="shipInfo submarine" onclick="selectShip(this)">
-                            <div class="shipTile"></div>
-                            <div class="shipTile"></div>
-                            <div class="shipTile"></div>
+                            <div class="shipTile submarineTile"></div>
+                            <div class="shipTile submarineTile"></div>
+                            <div class="shipTile submarineTile"></div>
                         </div>
                     </div>
                     <div class="destroyer">
                         <h3>Destroyer</h3>
                         <div class="shipInfo destroyer" onclick="selectShip(this)">
-                            <div class="shipTile"></div>
-                            <div class="shipTile"></div>
-                            <div class="shipTile"></div>
+                            <div class="shipTile destroyerTile"></div>
+                            <div class="shipTile destroyerTile"></div>
+                            <div class="shipTile destroyerTile"></div>
                         </div>
                     </div>
                     <div class="small">
                         <h3>Small Ship</h3>
                         <div class="shipInfo small" onclick="selectShip(this)">
-                            <div class="shipTile"></div>
-                            <div class="shipTile"></div>
+                            <div class="shipTile smallTile"></div>
+                            <div class="shipTile smallTile"></div>
                         </div>
                     </div>
                     <div>
@@ -105,54 +104,63 @@
 
             </div>
             <div class="box" id="info">
-                this doesn't do anything yet
                 <div class="shipsInfoContainer">
                     <div class="battleship">
                         <h3>BattleShip</h3>
-                        <div class="shipMoves">
-                            <div class="shipTile"></div>
-                            <div class="shipTile"></div>
-                            <div class="shipTile"></div>
-                            <div class="shipTile"></div>
+                        <div class="shipMoves battleship">
+                            <div class="shipTile info battleshipTile"></div>
+                            <div class="shipTile info battleshipTile"></div>
+                            <div class="shipTile info battleshipTile"></div>
+                            <div class="shipTile info battleshipTile"></div>
                         </div>
                         <!-- <button>Select</button> -->
                     </div>
                     <div class="aircraft">
                         <h3>Aircraft Carrier</h3>
-                        <div class="shipMoves">
-                            <div class="shipTile"></div>
-                            <div class="shipTile"></div>
-                            <div class="shipTile"></div>
-                            <div class="shipTile"></div>
-                            <div class="shipTile"></div>
+                        <div class="shipMoves aircraft">
+                            <div class="shipTile info aircraftTile"></div>
+                            <div class="shipTile info aircraftTile"></div>
+                            <div class="shipTile info aircraftTile"></div>
+                            <div class="shipTile info aircraftTile"></div>
+                            <div class="shipTile info aircraftTile"></div>
                         </div>
                         <!-- <button>Select</button> -->
                     </div>
                     <div class="submarine">
                         <h3>Submarine</h3>
-                        <div class="shipMoves">
-                            <div class="shipTile"></div>
-                            <div class="shipTile"></div>
-                            <div class="shipTile"></div>
+                        <div class="shipMoves submarine">
+                            <div class="shipTile info submarineTile"></div>
+                            <div class="shipTile info submarineTile"></div>
+                            <div class="shipTile info submarineTile"></div>
                         </div>
                         <!-- <button>Select</button> -->
                     </div>
                     <div class="destroyer">
                         <h3>Destroyer</h3>
-                        <div class="shipMoves">
-                            <div class="shipTile"></div>
-                            <div class="shipTile"></div>
-                            <div class="shipTile"></div>
+                        <div class="shipMoves destroyer">
+                            <div class="shipTile info destroyerTile"></div>
+                            <div class="shipTile info destroyerTile"></div>
+                            <div class="shipTile info destroyerTile"></div>
                         </div>
                         <!-- <button>Select</button> -->
                     </div>
                     <div class="small">
                         <h3>Small Ship</h3>
-                        <div class="shipMoves">
-                            <div class="shipTile"></div>
-                            <div class="shipTile"></div>
+                        <div class="shipMoves small">
+                            <div class="shipTile info smallTile"></div>
+                            <div class="shipTile info smallTile"></div>
                         </div>
                         <!-- <button>Select</button> -->
+                    </div>
+                    <div>
+                        <button id="rotate" onclick="rotateShips()">
+                            Rotate
+                        </button>
+                        <br>
+                        <br>
+                        <button id="rotate" onclick="setBoard()">
+                            Reset
+                        </button>
                     </div>
                 </div>
             </div>
