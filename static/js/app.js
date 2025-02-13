@@ -174,14 +174,12 @@ function unselectAll(){
 let isRotated = true
 let shipSize = 0
 let shipName = ''
-// Highlight ship selected
 function selectShip(ship){
     // isSelected=true
     const shipTiles = ship.children
     shipName = ship.classList[1]
     if(!shipTiles[0].classList.contains('shipSelected')){
         unselectAll()
-        // return;
     }
     shipSize = shipTiles.length
     for (let index = 0; index < shipTiles.length; index++) {
@@ -283,7 +281,8 @@ function placeShip(tile){
 
 
 /////////////////////////////////////////////////////////////////////////////////////////
-// Highlight tile when mouse moves over tile
+
+
 function highlightMove(tile){
     if(totalShipsPlaced<5){
         return
@@ -324,6 +323,6 @@ function fire(tile){
         }
     }
     let scoreBoard = document.getElementById('accuracy')
-    scoreBoard.innerHTML = `Accuracy: ${(parseInt((totalHits/totalFires)*100))}%`
+    scoreBoard.innerHTML = `Accuracy: ${(parseInt((hits/totalFires)*100))}%`
     CPUfire()
 }
