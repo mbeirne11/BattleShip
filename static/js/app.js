@@ -1,94 +1,15 @@
-let ships = {
-    'battleship':{
-        'isPlaced':false,
-        'health':[0,0,0,0],
-        'isReady':false,
-        'isSunk':false
-    },
-    'aircraft':{
-        'isPlaced':false,
-        'health':[0,0,0,0,0],
-        'isReady':false,
-        'isSunk':false
-    },
-    'submarine':{
-        'isPlaced':false,
-        'health':[0,0,0],
-        'isReady':false,
-        'isSunk':false
-    },
-    'destroyer':{
-        'isPlaced':false,
-        'health':[0,0,0],
-        'isReady':false,
-        'isSunk':false
-    },
-    'small':{
-        'isPlaced':false,
-        'health':[0,0],
-        'isReady':false,
-        'isSunk':false
+let boardValues = {}
+for(let i = 1; i<11;i++){
+    let r = []
+    for(let j = 1; j<11;j++){
+        r.push(String.fromCharCode(i+64)+j)
     }
+    boardValues[i]=r
 }
-function placeCPU(size){
-    let r = Math.floor(Math.random()*2)
-    let x = 0
-    let y = 0
-    let okay = true
-    if(r==0){
-        x = Math.floor(Math.random() * (9-size))
-        y = Math.floor(Math.random() * 9)
-        for(let j = 0; j<size;j++){
-            if((!!screen[x+j][y])){
-                okay = false
-            }else if((screen[x+j][y]==0)){
-            }else{
-                okay = false
-            }
-        }
-    }else{
-        x = Math.floor(Math.random() * 9)
-        y = Math.floor(Math.random() * (9-size))
-        for(let j = 0; j<size;j++){
-            if((!!screen[x][y+j])){
-                okay = false
-            }else if((screen[x][y+j]==0)){
-            }else{
-                okay = false
-            }
-        }
-    }
-    
-    if(okay == true){
-        if(r==0){
-            for(let j = 0; j<size;j++){
-                screen[x+j][y] = size
-            } 
-        }else{
-            for(let j = 0; j<size;j++){
-                screen[x][y+j] = size
-            } 
-        }
-    }else{
-        placeCPU(size)
-    }
-}
-let screen = []
-function setCPU(){
-    for(let i=0;i<10;i++){
-        screen[i] = []
-        for(let j=0;j<10;j++){
-            screen[i][j] = 0
-        }
-    }
-    console.log('setCPU')
-    let cpuShips = [5,4,3,3,2]
-    for(let size of cpuShips){
-        placeCPU(size)
-    }    
-}
+
 let totalFires = 0;
 let totalHits;
+let isTurn = true
 function checkForWinner(){
     totalHits = 0
     if(isTurn){
@@ -114,70 +35,54 @@ function showWinner(turn){
     d3.select("#playAgain").attr("style", "visibility:visible")
     totalHits=17
 }
-let isTurn = true
-function CPUfire(){
-    isTurn = false
-    if(totalHits>16){
-        return
-    }
-    let cpuMoveOptions = []
-    let x = Math.floor(Math.random() * 9)
-    let y = Math.floor(Math.random() * 9)
-    cpuMoveOptions.push(`${x}, ${y}`)
-    let tiles = document.getElementsByClassName('tile')
-    for(let tile of tiles){
-        if(!!tile.classList.contains('fireHit')){
-            let a = parseInt(tile.id[0])
-            let b = parseInt(tile.id[3])
-            cpuMoveOptions.push(`${a}, ${b + 1}`)
-            cpuMoveOptions.push(`${a}, ${b - 1}`)
-            cpuMoveOptions.push(`${a + 1}, ${b}`)
-            cpuMoveOptions.push(`${a - 1}, ${b}`)
-        }
-    }
-    let c;
-    let t;
-    let i = 0
-    while (i<cpuMoveOptions.length) {
-        c = Math.floor(Math.random()*cpuMoveOptions.length)
-        t = document.getElementById(cpuMoveOptions[c])
-        if(!!t){
-            break
-        }
-        i++
-    }
-    if((!!(t.classList.contains('fireHit')))||(!!(t.classList.contains('fireMiss')))){
-        CPUfire()
-    }
-    if(!!t.classList.contains('ship')){
-        t.classList.add('fireHit')
-        displayHitInfo(t.classList[2],t.classList[3])
-        checkForWinner()
-    }else{
-        t.classList.add('fireMiss')
-    }
-}
+
 function displayHitInfo(ship,space){
-    // ships[ship]['health'][space] = 1
-    let tiles = document.getElementsByClassName(`shipTile info ${ship}`)
-    tiles[space].classList.add('fireHit')
-}
-function unselectAll(){
-    let shipTiles = document.getElementsByClassName('shipTile')
-    for (let index = 0; index < shipTiles.length; index++) {
-        const element = shipTiles[index];
-        element.classList.remove('shipSelected')
+    playerShips[ship.replace('Tile','')]['health'] += -1
+    let tiles = document.getElementsByClassName(`shipTile ${ship}`)
+    tiles[space].classList.add('fireHover')
+    let h = playerShips[ship.replace('Tile','')]['health']
+    if(h==0){
+        playerShips[ship.replace('Tile','')]['isSunk'] = true
+        for(let tile of tiles){
+            tile.classList.add('fireHit')
+        }
+        document.getElementById("cpuMoves").innerHTML+= " They sunk your " + ship.replace('Tile','') + "!!!"
     }
-    shipSize = 0
 }
-// let isSelected = false
-let isRotated = true
+
+let isRotated;
+function rotateShips(){
+    isRotated = !isRotated
+}
 let shipSize = 0
 let shipName = ''
 function selectShip(ship){
+    if(gameStarted){
+        return
+    }
     // isSelected=true
-    const shipTiles = ship.children
-    shipName = ship.classList[1]
+    shipName = ship.id
+    if((ship.id.includes(','))&&(ship.classList.length>1)){
+        shipName = ship.classList[2].replace('Tile','')
+    }
+    console.log(shipName)
+    isRotated = playerShips[shipName]['isRotated']
+    let shipTiles = document.getElementById(shipName).children
+    if(playerShips[shipName]['isPlaced']){
+        let tiles = document.getElementsByClassName('tile')
+        for(let t of tiles){
+            if(t.classList.contains(`${shipName}Tile`)){
+                t.setAttribute("onclick", "")
+                let classesToRemove = Array.from(t.classList)
+                classesToRemove.shift()
+                t.classList.remove(...classesToRemove)
+            }
+        }
+        for(t of shipTiles){
+            t.classList.remove(`${shipName}Tile`)
+        }
+        
+    }
     if(!shipTiles[0].classList.contains('shipSelected')){
         unselectAll()
     }
@@ -192,8 +97,14 @@ function selectShip(ship){
             break
         }
     } 
-    
-    
+}
+function unselectAll(){
+    let shipTiles = document.getElementsByClassName('shipTile')
+    for (let index = 0; index < shipTiles.length; index++) {
+        const element = shipTiles[index];
+        element.classList.remove('shipSelected')
+    }
+    shipSize = 0
 }
 function hoverShip(tile){
     unhoverShip()
@@ -245,9 +156,13 @@ function unhoverShip(){
         element.removeEventListener('click',placeShip)
     }
 }
-function rotateShips(){
-    isRotated = !isRotated
-}
+
+document.addEventListener('keydown', function(event){
+    if(event.key == 'r'){
+        isRotated = !isRotated
+    }
+})
+
 totalShipsPlaced = 0
 function placeShip(tile){
     if(!isRotated){    
@@ -257,7 +172,9 @@ function placeShip(tile){
             t.classList.add(`${shipName}Tile`)
             t.classList.add(index)
             t.classList.remove('shipHover')
-            board[parseInt(tile.target.id[0])+index][parseInt(tile.target.id[tile.target.id.length-1])] = shipSize
+            let s = document.getElementById(shipName)
+            t.setAttribute("onclick", "selectShip(this)")
+            // board[parseInt(tile.target.id[0])+index][parseInt(tile.target.id[tile.target.id.length-1])] = shipSize
         }
     }else
         {for (let index = 0; index < shipSize; index++) {
@@ -266,38 +183,65 @@ function placeShip(tile){
             t.classList.add(`${shipName}Tile`)
             t.classList.add(index)
             t.classList.remove('shipHover')
-            board[parseInt(tile.target.id[0])][parseInt(tile.target.id[tile.target.id.length-1])+index] = shipSize
+            let s = document.getElementById(shipName)
+            t.setAttribute("onclick", "selectShip(this)")
+            // board[parseInt(tile.target.id[0])][parseInt(tile.target.id[tile.target.id.length-1])+index] = shipSize
         }
     }
-    d3.select(`.${shipName}`).attr("style", "visibility:hidden")
+    let ship = document.getElementById(`${shipName}`)   
+    let tiles = ship.children
+    for(let t of tiles){
+        t.classList.add(`${shipName}Tile`)
+    }
+    playerShips[shipName]['isPlaced'] = true
+    playerShips[shipName]['isRotated'] = isRotated
     totalShipsPlaced+=1
     unselectAll()
     unhoverShip()
-    if(totalShipsPlaced==5){
-        d3.select("#sea").attr("style", "visibility:hidden")
-        d3.select("#info").attr("style", "visibility:visible")
+    if (totalShipsPlaced>4){
+        
     }
 }
-
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
+let gameStarted = false
+function startGame(){
+    if (totalShipsPlaced<5){
+        return
+    }
+    d3.select("#stats").attr("style", "visibility:visible")
+    gameStarted=true
+}
 
 function highlightMove(tile){
+    if(!gameStarted){
+        return
+    }
+    if(!isTurn){
+        return
+    }
     if(totalShipsPlaced<5){
         return
     }
     if(totalHits>16){
         return
     }
-    document.getElementById(tile.id).classList.add('fireHover')
+    tile.classList.add('fireHover')
+    let move = boardValues[parseInt(tile.id.replace('screen ','')[0])+1][tile.id.replace('screen ','')[3]]
+    document.getElementById("playerMoves").innerHTML="Targeting " + move 
 }
 function unHighlightMove(tile){
-    document.getElementById(tile.id).classList.remove('fireHover')
+    if(!isTurn){
+        return
+    }
+    tile.classList.remove('fireHover')
+    // document.getElementById("playerMoves").innerHTML=""
 }
+
 function fire(tile){
-    isTurn=true
-    if(totalShipsPlaced<5){
+    // isTurn=true
+    if(!gameStarted){
+        return
+    }
+    if(!isTurn){
         return
     }
     if(totalHits>16){
@@ -309,20 +253,45 @@ function fire(tile){
     row = tile.id.replace('screen ', '')[0]
     col = tile.id.replace('screen ', '')[3]
     totalFires+=1
-    if(screen[row][col]!=0){
-        document.getElementById(tile.id).classList.add('fireHit')
-        checkForWinner()
-    }else{
-        document.getElementById(tile.id).classList.add('fireMiss')
-    }
-    let d = document.getElementsByClassName('display')
-    let hits = 0
-    for(let tile of d){
-        if(!!tile.classList.contains('fireHit')){
-            hits+=1
+    let move = boardValues[parseInt(row)+1][col]
+    document.getElementById("playerMoves").innerHTML ='Firing on '+move+'.'
+    isTurn=false
+    setTimeout(function(){
+        if(screen[row][col]!=0){
+            document.getElementById(tile.id).classList.add('fireHit')
+            document.getElementById("playerMoves").innerHTML+=" HIT!!"
+            let s = screen[row][col]
+            cpuShips[s]['health'] += -1
+            if(cpuShips[s]['health'] == 0){
+                d3.selectAll('.cpuTile.'+ s).attr("style", "visibility:visible")
+                let tiles = document.getElementsByClassName('cpuTile '+ s)
+                for(let t of tiles){
+                    t.classList.add("fireHit")
+                }
+                document.getElementById('playerMoves').innerHTML+=" You sank their " +s + "!!!"
+            }
+            
+            isTurn=true
+            checkForWinner()
+            isTurn=false
+        }else{
+            document.getElementById(tile.id).classList.add('fireMiss')
+            document.getElementById("playerMoves").innerHTML+=" MISS!"
+    
         }
-    }
-    let scoreBoard = document.getElementById('accuracy')
-    scoreBoard.innerHTML = `Accuracy: ${(parseInt((hits/totalFires)*100))}%`
-    CPUfire()
+        unHighlightMove(tile)
+        let d = document.getElementsByClassName('display')
+        let hits = 0
+        for(let tile of d){
+            if(!!tile.classList.contains('fireHit')){
+                hits+=1
+            }
+        }
+        let scoreBoard = document.getElementById('accuracy')
+        scoreBoard.innerHTML = `Accuracy: ${(parseInt((hits/totalFires)*100))}%`
+        tile.classList.remove('fireHover')
+    },1000)
+    setTimeout(function(){
+        CPUfire()
+    },2500)
 }
