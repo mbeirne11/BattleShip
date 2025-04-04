@@ -22,12 +22,12 @@
             <div class="box" id="howTo">
                 How To:
                 <div class="how">
-                    Select a ship below then place it on the board. You can rotate a ship by pressing the rotate button before placing it.
+                    Select a ship below then place it on the board. You can rotate a ship by pressing the rotate button or "R" before placing it.
                 </div>
                 <div class="how">
-                    Once all five ships are placed you may begin. 
+                    Once all five ships are placed you may begin. Ships that are hit will be highlighted bellow. When you sink and ememy ship, it will appear on their side.
                 </div>
-                <div class="how">
+                <div id="fireMessage" class="how">
                     Fire when ready!
                 </div>
                 <button id="start" onclick="startGame()">Start</button>
@@ -44,7 +44,7 @@
                     Play Again
                 </button>
             </div>
-            <div class="box" id="sea">
+            <div class="box" id="sea">Player Ships
                 <div class="shipsContainer" >
                     
                     <div class="battleship">
@@ -105,6 +105,7 @@
 
             </div>
             <div class="box" id="cpu">
+                CPU Ships
                 <div class="cpuShipsContainer">
                     
                     <div class="battleship">
@@ -157,6 +158,9 @@
                 </div>
             </div>
         </div>
-        
+        <div id="winnerScreen" class="winnerScreen">
+            <h1 id="showWinner"></h1>
+            <button id="closeScreen">Close</button>
+        </div>
     </body>
 </html>
