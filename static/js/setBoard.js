@@ -2,6 +2,10 @@ window.onload = function() {
     setBoard();
 }
 
+// initShips()
+// createShips()
+
+
 let playerShips = {
     'battleship':{
         'isRotated':true,
@@ -163,7 +167,7 @@ function clearBoard() {
     let scoreBoard = document.getElementById('scoreBoard')
     scoreBoard.innerHTML=''
     let acc = document.getElementById('accuracy')
-    acc.innerHTML='Accuracy: '
+    acc.innerHTML='Shots Fired: '
     let shipTiles = document.getElementsByClassName(`shipTile`)
     for(let t of shipTiles){
         t.classList.remove(...t.classList)
@@ -179,7 +183,11 @@ function clearBoard() {
     }
     d3.selectAll(".cpuTile").attr("style", "visibility:hidden")
     d3.select("#playAgain").attr("style", "visibility:hidden")
-    // d3.select("#stats").attr("style", "visibility:hidden")
+    d3.select("#stats").attr("style", "visibility:hidden")
+    d3.select("#cpu").attr("style", "visibility:hidden")
+    d3.select("#start").attr("style", "visibility:hidden")
+    d3.select("#fireMessage").attr("style", "visibility:hidden")
+    
     document.getElementById("playerMoves").innerHTML=""
     document.getElementById("cpuMoves").innerHTML=""
 
@@ -188,7 +196,6 @@ function clearBoard() {
 
 function setBoard() {
     clearBoard()
-    setCPU()
     console.log('setBoard')
     for(let i=0;i<10;i++){
         board[i] = []

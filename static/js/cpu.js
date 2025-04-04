@@ -1,4 +1,5 @@
 function placeCPU(key){
+    console.log(key)
     let size = cpuShips[key]['health']
     let r = Math.floor(Math.random()*2)
     let x = 0
@@ -54,6 +55,7 @@ function setCPU(){
     }
     console.log('setCPU')
     Object.keys(cpuShips).forEach(key=>{
+        console.log(key)
         placeCPU(key)
     }) 
     console.log(screen)
@@ -64,23 +66,79 @@ function CPUfire(){
     if(totalHits>16){
         return
     }
-    let cpuMoveOptions = []
-    let x = Math.floor(Math.random() * 9)
-    let y = Math.floor(Math.random() * 9)
-    cpuMoveOptions.push(`${x}, ${y}`)
+    let cpuMoveValues = {}
+    let matrix =   [[10, 15, 19, 21, 22, 22, 21, 19, 15, 10],
+                    [15, 20, 24, 26, 27, 27, 26, 24, 20, 15],
+                    [19, 24, 28, 30, 31, 31, 30, 28, 24, 19],
+                    [21, 26, 30, 32, 33, 33, 32, 30, 26, 21],
+                    [22, 27, 31, 33, 34, 34, 33, 31, 27, 22],
+                    [22, 27, 31, 33, 34, 34, 33, 31, 27, 22],
+                    [21, 26, 30, 32, 33, 33, 32, 30, 26, 21],
+                    [19, 24, 28, 30, 31, 31, 30, 28, 24, 19],
+                    [15, 20, 24, 26, 27, 27, 26, 24, 20, 15],
+                    [10, 15, 19, 21, 22, 22, 21, 19, 15, 10]]
     let tiles = document.getElementsByClassName('tile')
     let a;
     let b;
+    let maxMatrixValue = 0
     for(let tile of tiles){
-        if(!!tile.classList.contains('fireHit')){
+        let cl = tile.classList
+        if(!!cl.contains('fireMiss')){
             a = parseInt(tile.id[0])
             b = parseInt(tile.id[3])
-            cpuMoveOptions.push(`${a}, ${b + 1}`)
-            cpuMoveOptions.push(`${a}, ${b - 1}`)
-            cpuMoveOptions.push(`${a + 1}, ${b}`)
-            cpuMoveOptions.push(`${a - 1}, ${b}`)
+            if(b+1<10){
+                matrix[a][b+1] += -(matrix[a][b+1])/(5)
+            }
+            if(b-1>=0){
+                matrix[a][b-1] += -(matrix[a][b-1])/(5)
+            }
+            if(a+1<10){
+                matrix[a+1][b] += -(matrix[a+1][b])/(5)
+            }
+            if(a-1>=0){
+                matrix[a-1][b] += -(matrix[a-1][b])/(5)
+            }
+        }
+        if(!!cl.contains('fireHit')){
+            if((!playerShips[cl[2].replace('Tile','')]['isSunk'])){
+                a = parseInt(tile.id[0])
+                b = parseInt(tile.id[3])
+                for (let size = 0; size < 3; size++) {
+                    if(b+1+size<10){
+                        matrix[a][b+1+size] += (matrix[a][b+1+size]+10)*(3-size)
+                    }
+                    if(b-1-size>=0){
+                        matrix[a][b-1-size] += (matrix[a][b-1-size]+10)*(3-size)
+                    }
+                    if(a+1+size<10){
+                        matrix[a+1+size][b] += (matrix[a+1+size][b]+10)*(3-size)
+                    }
+                    if(a-1-size>=0){
+                        matrix[a-1-size][b] += (matrix[a-1-size][b]+10)*(3-size)
+                    }
+                }
+            }    
         }
     }
+    // console.log(matrix)
+    for(let tile of tiles){
+        if((!(tile.classList.contains('fireHit')))&&(!(tile.classList.contains('fireMiss')))){
+            a = parseInt(tile.id[0])
+            b = parseInt(tile.id[3])
+            if(matrix[a][b]>maxMatrixValue){
+                maxMatrixValue=matrix[a][b]
+            }
+            cpuMoveValues[`${a}, ${b}`] = matrix[a][b]
+        }
+    }
+    let cpuMoveOptions = []
+    // console.log(maxMatrixValue)
+    Object.entries(cpuMoveValues).forEach(([key,value])=>{
+        if(value>(maxMatrixValue-maxMatrixValue/8)){
+            cpuMoveOptions.push(key)
+        }
+    })
+    // console.log(cpuMoveOptions)
     let c;
     let t;
     let i = 0

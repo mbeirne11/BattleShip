@@ -35,6 +35,28 @@ body{
     grid-template-columns: 1fr 1fr 1fr;
     
 }
+.winnerScreen{
+    color: black;
+    opacity: 0;
+    position: fixed;
+    top:35%;
+    left:25%;
+    right:25%;
+    bottom:30%;
+    z-index: -1;
+    margin:2%;
+    padding:3%;
+    background-color: rgb(183, 189, 96);
+    border: solid 15px rgb(97, 102, 70);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.winnerScreen.open{
+    opacity: 1;
+    z-index: 999;
+}
 /* .box:nth-child(3){
     grid-column: 3/4;
     grid-row: 1/3;

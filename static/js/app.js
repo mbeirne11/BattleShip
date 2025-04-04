@@ -29,26 +29,6 @@ function checkForWinner(){
         showWinner(turn)
     }
 }
-function showWinner(turn){
-    let scoreBoard = document.getElementById('scoreBoard')
-    scoreBoard.innerHTML = turn + ' Wins!'
-    d3.select("#playAgain").attr("style", "visibility:visible")
-    totalHits=17
-}
-
-function displayHitInfo(ship,space){
-    playerShips[ship.replace('Tile','')]['health'] += -1
-    let tiles = document.getElementsByClassName(`shipTile ${ship}`)
-    tiles[space].classList.add('fireHover')
-    let h = playerShips[ship.replace('Tile','')]['health']
-    if(h==0){
-        playerShips[ship.replace('Tile','')]['isSunk'] = true
-        for(let tile of tiles){
-            tile.classList.add('fireHit')
-        }
-        document.getElementById("cpuMoves").innerHTML+= " They sunk your " + ship.replace('Tile','') + "!!!"
-    }
-}
 
 let isRotated;
 function rotateShips(){
@@ -65,10 +45,11 @@ function selectShip(ship){
     if((ship.id.includes(','))&&(ship.classList.length>1)){
         shipName = ship.classList[2].replace('Tile','')
     }
-    console.log(shipName)
+    // console.log(shipName)
     isRotated = playerShips[shipName]['isRotated']
     let shipTiles = document.getElementById(shipName).children
     if(playerShips[shipName]['isPlaced']){
+        totalShipsPlaced += -1
         let tiles = document.getElementsByClassName('tile')
         for(let t of tiles){
             if(t.classList.contains(`${shipName}Tile`)){
@@ -83,6 +64,11 @@ function selectShip(ship){
         }
         
     }
+    if (totalShipsPlaced<=4){
+        d3.select("#start").attr("style", "visibility:hidden")
+        d3.select("#fireMessage").attr("style", "visibility:hidden")
+    }
+    playerShips[shipName]['isPlaced']=false
     if(!shipTiles[0].classList.contains('shipSelected')){
         unselectAll()
     }
@@ -199,16 +185,56 @@ function placeShip(tile){
     unselectAll()
     unhoverShip()
     if (totalShipsPlaced>4){
-        
+        d3.select("#start").attr("style", "visibility:visible")
+        // d3.select("#fireMessage").attr("style", "visibility:visible")
     }
+
 }
 let gameStarted = false
 function startGame(){
+    if(gameStarted){
+        return
+    }
     if (totalShipsPlaced<5){
         return
     }
     d3.select("#stats").attr("style", "visibility:visible")
+    d3.select("#cpu").attr("style", "visibility:visible")
+    d3.select("#fireMessage").attr("style", "visibility:visible")
+    setCPU()
     gameStarted=true
+}
+function showWinner(turn){
+    let showWinner = document.getElementById('showWinner')
+    let winnerScreen = document.getElementById('winnerScreen')
+    let scoreBoard = document.getElementById('scoreBoard')
+    let playerMove = document.getElementById('playerMoves')
+    let cpuMove = document.getElementById('cpuMoves')
+    showWinner.innerHTML = turn + ' Wins!'
+    scoreBoard.innerHTML = turn + ' Wins!'
+    cpuMove.innerHTML += " " + turn + ' Wins!'
+    playerMove.innerHTML += " " + turn + ' Wins!'
+    winnerScreen.classList.add('open')
+    let closeScreen = document.getElementById("closeScreen")
+    closeScreen.addEventListener("click", () =>{
+        winnerScreen.classList.remove('open')
+    })
+    d3.select("#playAgain").attr("style", "visibility:visible")
+    totalHits=17
+}
+
+function displayHitInfo(ship,space){
+    playerShips[ship.replace('Tile','')]['health'] += -1
+    let tiles = document.getElementsByClassName(`shipTile ${ship}`)
+    tiles[space].classList.add('fireHover')
+    let h = playerShips[ship.replace('Tile','')]['health']
+    if(h==0){
+        playerShips[ship.replace('Tile','')]['isSunk'] = true
+        for(let tile of tiles){
+            tile.classList.add('fireHit')
+        }
+        document.getElementById("cpuMoves").innerHTML+= " They sunk your " + ship.replace('Tile','') + "!!!"
+    }
 }
 
 function highlightMove(tile){
@@ -288,7 +314,7 @@ function fire(tile){
             }
         }
         let scoreBoard = document.getElementById('accuracy')
-        scoreBoard.innerHTML = `Accuracy: ${(parseInt((hits/totalFires)*100))}%`
+        scoreBoard.innerHTML = `Shots Fired: ${totalFires}`
         tile.classList.remove('fireHover')
     },1000)
     setTimeout(function(){
